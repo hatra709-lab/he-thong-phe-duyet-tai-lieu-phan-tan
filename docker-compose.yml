@@ -1,0 +1,60 @@
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Document.Api/Dockerfile
+    ports:
+      - "127.0.0.1:5200:5200"
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      SeedDemoData: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  
+  ef-tools:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+
+    profiles:
+      - tools
+
+    working_dir: /workspace
+
+    volumes:
+      - ./:/workspace
+
+      # Tách thư mục build Linux khỏi Windows
+      - /workspace/src/Document.Api/obj
+      - /workspace/src/Document.Api/bin
+      - /workspace/src/Document.Contracts/obj
+      - /workspace/src/Document.Contracts/bin
+
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+volumes:
+  postgres_data:
