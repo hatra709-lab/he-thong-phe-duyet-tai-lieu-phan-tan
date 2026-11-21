@@ -94,3 +94,43 @@ trong Docker.
 - Xây dựng API từ chối.
 - Kiểm tra quy tắc chuyển trạng thái.
 - Lưu lịch sử xử lý tài liệu.
+
+
+## Tuần 3 - Quy trình phê duyệt tài liệu
+
+### 1. Mục tiêu
+Xây dựng quy trình phê duyệt tài liệu một cấp
+cho doanh nghiệp nhỏ.
+
+### 2. Công việc đã thực hiện
+- [x] API gửi tài liệu phê duyệt.
+- [x] API phê duyệt tài liệu.
+- [x] API từ chối tài liệu có lý do.
+- [x] API xem lịch sử xử lý.
+- [x] Lưu lịch sử vào PostgreSQL.
+- [x] Kiểm tra vai trò người xử lý.
+- [x] Kiểm tra điều kiện chuyển trạng thái.
+- [x] Sử dụng transaction khi cập nhật tài liệu.
+- [x] Kiểm thử HTTP 403 và 409.
+- [x] Kiểm thử lý do từ chối bắt buộc.
+
+### 3. API mới
+- POST /documents/{id}/submit
+- POST /documents/{id}/approve
+- POST /documents/{id}/reject
+- GET /documents/{id}/history
+
+### 4. Kết quả
+Đã thực hiện thành công hai quy trình:
+
+- Tài liệu 1: Draft -> Submitted -> Approved.
+- Tài liệu 2: Draft -> Submitted -> Rejected.
+
+Hệ thống ghi lại người thực hiện, hành động,
+lý do xử lý và thời gian thực hiện.
+
+### 5. Kế hoạch tuần 4
+- Tích hợp RabbitMQ.
+- Tạo sự kiện khi tài liệu được gửi phê duyệt.
+- Tạo sự kiện khi tài liệu được duyệt hoặc từ chối.
+- Chuẩn bị Notification Service nhận sự kiện.
